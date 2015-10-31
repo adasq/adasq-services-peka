@@ -1,0 +1,39 @@
+{
+  "name": "adasq-services-peka",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./src/init.js",
+  "scripts": {
+    "start": "node src/init.js"
+  },
+  "dependencies": {
+    "MD5": "1.2.1",
+    "async": "^1.5.0",
+    "cheerio": "",
+    "express": "~3.4.4",
+    "grunt": "~0.4.1",
+    "grunt-contrib-clean": "^0.4.1",
+    "grunt-contrib-concat": "^0.3.0",
+    "grunt-contrib-copy": "^0.4.1",
+    "grunt-contrib-jshint": "^0.4.3",
+    "grunt-contrib-less": "~0.11.0",
+    "grunt-contrib-uglify": "^0.2.7",
+    "grunt-contrib-watch": "^0.4.4",
+    "q": "1.0.1",
+    "request": "2.37.0",
+    "underscore": "latest"
+  },
+  "engines": {
+    "node": "0.12.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/heroku/node-js-getting-started"
+  },
+  "keywords": [
+    "node",
+    "heroku",
+    "express"
+  ],
+  "license": "MIT"
+}
