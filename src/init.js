@@ -19,6 +19,7 @@ var Directions = require('./services/Directions.js');
 var Utils = require('./services/Utils.js');
 
 module.exports = function(){
+ 
 
 function getTimesBySymbol (symbol){
 var deferred = q.defer();
@@ -30,9 +31,12 @@ vm.getTimesBySymbol(symbol).then(function(response){
 			var departureTimeString = row.departure.substr(11, 5);
 			return [row.realTime, row.line, row.direction, row.minutes, departureTimeString]
 		});
+        console.log(times)
 		deferred.resolve({bollard: bollard, times: times});
 	}else if(response.failure){
-			deferred.reject();
+			deferred.resolve({
+                times: []
+            });
 	}else{
 		deferred.reject();
 	}
@@ -173,18 +177,21 @@ watchService.read().then(function(db){
         method: 'GET',
         path: '/track/{line}/{direction}/{format*}',
         handler: function (request, reply) {
+
         	var line = request.params.line || 1;
 			var direction = (request.params.direction == '1') ? 1 : 0;
 			console.log(request.params.format);
 
+            console.log('track', line, direction);
+
 			prepare(line, direction).then(function(result){
 				
-				
+				console.log(result);
 				
 				if(request.params.format === 'text'){
 					var html = "<table>";
 					_.each(result, function(place){
-						html += "<tr><td>"+place.stop+"</td><td>"+(place.min ? place.min+'min.': "-")+"</td></tr>";
+						html += "<tr><td>"+place.stop+"</td><td>"+(place.min ? place.min+'min.': place.fcked ? "fcked": "-")+"</td></tr>";
 					});
 					html+="</table>";
 					reply(html);
@@ -226,6 +233,7 @@ function prepare(lineNo, target){
 			return getTimesBySymbol(stop[1]);
 		});
 		q.all(promises).then(function(timeTables){
+            console.log(timeTables)
 			var result = [];
 			_.each(timeTables, function(timeTable, i){
 				//console.log(i+'. '+lineStops[i][0]+' '+lineStops[i][1]+' '+lineStops[i][2]);
@@ -238,6 +246,7 @@ function prepare(lineNo, target){
 					//console.log('\t\t-------');
 				}
 				result.push({
+                    fcked: (timeTable.times.length === 0),
 					min: (stop && stop[3]) || null,
 					stop: lineStops[i][0],
 					t1: lineStops[i][1],
@@ -245,7 +254,9 @@ function prepare(lineNo, target){
 				});
 			});
 			deferred.resolve(result);
-		});
+		}, function(err){
+            console.log('err', err);
+        });
 	}, deferred.reject);		
 	return deferred.promise;
 }
