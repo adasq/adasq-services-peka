@@ -194,7 +194,32 @@ watchService.read().then(function(db){
 						html += "<tr><td>"+place.stop+"</td><td>"+(place.min ? place.min+'min.': place.fcked ? "fcked": "-")+"</td></tr>";
 					});
 					html+="</table>";
-					reply(html);
+
+                    const html2 = `
+                        <html>
+                            <head>
+                                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                                <style>
+                                    td {
+                                        border: none;
+                                    }
+                                    tr:nth-child(even) {
+                                        background-color: #f1f1f1;
+                                    }
+                                    tr:nth-child(odd) {
+                                        
+                                    }
+                                </style>
+                            </head>
+                            <body>
+                            <a href="/peka/track/${line}/${+!(direction)}/text">change direction of ${line}</a>
+                                ${html}
+                            </body>
+                        </html>
+
+                    `;
+
+					reply(html2);
 				}else{
 					reply(result);
 				}
