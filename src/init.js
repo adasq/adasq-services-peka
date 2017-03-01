@@ -165,10 +165,44 @@ watchService.read().then(function(db){
         }
     },{
         method: 'GET',
-        path: '/getTimes/{symbol}',
+        path: '/getTimes/{symbol}/{format*}',
         handler: function (request, reply) {        	
         	getTimesBySymbol(request.params.symbol).then(function(result){
-				reply(result);
+                if(request.params.format === 'text'){
+
+                    var html = "<table>";
+                    _.each(result.times, function(time){
+                        html += `<tr><td>${time[1]}</td><td>${time[2]}</td><td>${time[3]}</td><td>${time[4]}</td></tr>`;
+                    });
+                    html+="</table>";
+
+                    const html2 = `
+                        <html>
+                            <head>
+                                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                                <style>
+                                    td {
+                                        border: none;
+                                    }
+                                    tr:nth-child(even) {
+                                        background-color: #f1f1f1;
+                                    }
+                                    tr:nth-child(odd) {
+                                        
+                                    }
+                                </style>
+                            </head>
+                            <body>
+                                ${html}
+                            </body>
+                        </html>
+                    `;
+                    reply(html2);
+
+                }else{
+                    reply(result);
+                }
+				
 			}, function(){
 				reply({error: true}, 500);
 			});
@@ -180,18 +214,12 @@ watchService.read().then(function(db){
 
         	var line = request.params.line || 1;
 			var direction = (request.params.direction == '1') ? 1 : 0;
-			console.log(request.params.format);
-
-            console.log('track', line, direction);
-
 			prepare(line, direction).then(function(result){
-				
-				console.log(result);
-				
+                console.log(result)
 				if(request.params.format === 'text'){
 					var html = "<table>";
 					_.each(result, function(place){
-						html += "<tr><td>"+place.stop+"</td><td>"+(place.min ? place.min+'min.': place.fcked ? "fcked": "-")+"</td></tr>";
+						html += `<tr><td><a href="/peka/getTimes/${place.t2}/text">`+place.stop+`</a></td><td>`+(place.min ? place.min+'min.': place.fcked ? "fcked": "-")+`</td></tr>`;
 					});
 					html+="</table>";
 
@@ -216,7 +244,6 @@ watchService.read().then(function(db){
                                 ${html}
                             </body>
                         </html>
-
                     `;
 
 					reply(html2);
